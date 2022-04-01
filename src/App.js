@@ -3,6 +3,7 @@ import { ContactList } from './components/ContactList/ContactList';
 import { Filter } from './components/Filter/Filter';
 import { ContactForm } from './components/ContactForm/ContactForm';
 import { GlobalStyle } from './components/GlobalStyles';
+import toast, { Toaster } from 'react-hot-toast';
 
 function App() {
   const [contacts, setContacts] = useState(() => {
@@ -35,12 +36,11 @@ function App() {
   const onSubmitContact = (newContact, resetInput) => {
     const isExistContact = contacts.find(
       contact =>
-        contact.name.toLocaleLowerCase() ===
-        newContact.name.toLocaleLowerCase(),
+        contact.name.toLocaleLowerCase() === newContact.name.toLocaleLowerCase()
     );
 
     isExistContact
-      ? alert(`${newContact.name} is already in contacts`)
+      ? toast.error(`${newContact.name} is already in contacts`)
       : setContacts(prevContacts => {
           resetInput();
           return [...prevContacts, newContact];
@@ -49,18 +49,19 @@ function App() {
 
   const deleteContact = contactId => {
     setContacts(prevContacts =>
-      prevContacts.filter(contact => contact.id !== contactId),
+      prevContacts.filter(contact => contact.id !== contactId)
     );
   };
 
   const normalizedFilter = filter.toLowerCase();
   const findContacts = contacts.filter(contact =>
-    contact.name.toLowerCase().includes(normalizedFilter),
+    contact.name.toLowerCase().includes(normalizedFilter)
   );
 
   return (
     <>
       <GlobalStyle />
+      <Toaster />
       <section style={{ padding: '20px' }}>
         <h1 style={{ marginBottom: '20px' }}>Phonebook</h1>
         <ContactForm onSubmitContact={onSubmitContact} />
