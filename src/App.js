@@ -1,25 +1,16 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { ContactList } from './components/ContactList/ContactList';
 import { Filter } from './components/Filter/Filter';
 import { ContactForm } from './components/ContactForm/ContactForm';
 import { GlobalStyle } from './components/GlobalStyles';
 import toast, { Toaster } from 'react-hot-toast';
+import contactsActions from './redux/contacts-actions';
+import { useSelector, useDispatch } from 'react-redux';
 
 function App() {
-  const [contacts, setContacts] = useState(() => {
-    const contactsArray = localStorage.getItem('contacts');
-    const parsedContacts = JSON.parse(contactsArray);
-    return parsedContacts
-      ? parsedContacts
-      : [
-          { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-          { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-          { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-          { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-        ];
-  });
-
-  const [filter, setFilter] = useState('');
+  const contacts = useSelector(state => state.contacts.items);
+  const filter = useSelector(state => state.contacts.filter);
+  const dispatch = useDispatch();
   const isMounted = useRef(false);
 
   useEffect(() => {
@@ -30,7 +21,7 @@ function App() {
   }, [contacts]);
 
   const handleChange = e => {
-    setFilter(e.target.value);
+    dispatch(contactsActions.changeFilter(e.target.value));
   };
 
   const onSubmitContact = (newContact, resetInput) => {
@@ -39,19 +30,16 @@ function App() {
         contact.name.toLocaleLowerCase() === newContact.name.toLocaleLowerCase()
     );
 
-    isExistContact
-      ? toast.error(`${newContact.name} is already in contacts`)
-      : setContacts(prevContacts => {
-          resetInput();
-          return [...prevContacts, newContact];
-        });
+    if (isExistContact) {
+      toast.error(`${newContact.name} is already in contacts`);
+    } else {
+      dispatch(contactsActions.addContact(newContact));
+      resetInput();
+    }
   };
 
-  const deleteContact = contactId => {
-    setContacts(prevContacts =>
-      prevContacts.filter(contact => contact.id !== contactId)
-    );
-  };
+  const deleteContact = contactId =>
+    dispatch(contactsActions.deleteContact(contactId));
 
   const normalizedFilter = filter.toLowerCase();
   const findContacts = contacts.filter(contact =>

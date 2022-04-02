@@ -5,7 +5,13 @@ export const Filter = ({ value, handleChange }) => {
   return (
     <Label>
       Find contacts by name
-      <input type="text" name="filter" value={value} onChange={handleChange} />
+      <input
+        type="text"
+        name="filter"
+        value={value}
+        onChange={handleChange}
+        placeholder="contact name"
+      />
     </Label>
   );
 };
