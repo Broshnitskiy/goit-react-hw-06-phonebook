@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+// import { useEffect, useRef } from 'react';
 import { ContactList } from './components/ContactList/ContactList';
 import { Filter } from './components/Filter/Filter';
 import { ContactForm } from './components/ContactForm/ContactForm';
@@ -11,14 +11,14 @@ function App() {
   const contacts = useSelector(state => state.contacts.items);
   const filter = useSelector(state => state.contacts.filter);
   const dispatch = useDispatch();
-  const isMounted = useRef(false);
+  // const isMounted = useRef(false);
 
-  useEffect(() => {
-    if (isMounted.current === true) {
-      localStorage.setItem('contacts', JSON.stringify(contacts));
-    }
-    isMounted.current = true;
-  }, [contacts]);
+  // useEffect(() => {
+  //   if (isMounted.current === true) {
+  //     localStorage.setItem('contacts', JSON.stringify(contacts));
+  //   }
+  //   isMounted.current = true;
+  // }, [contacts]);
 
   const handleChange = e => {
     dispatch(contactsActions.changeFilter(e.target.value));
