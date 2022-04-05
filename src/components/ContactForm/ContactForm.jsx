@@ -1,11 +1,22 @@
 import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { nanoid } from 'nanoid';
-import PropTypes from 'prop-types';
+import toast from 'react-hot-toast';
 import { Form } from './ContactForm.styled';
+import contactsActions from '../../redux/contacts-actions';
+import { getContacts } from '../../redux/selectors';
 
-export const ContactForm = ({ onSubmitContact }) => {
+export const ContactForm = () => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
+
+  const contacts = useSelector(getContacts);
+  const dispatch = useDispatch();
+
+  const resetInput = () => {
+    setName('');
+    setNumber('');
+  };
 
   const handleChange = e => {
     switch (e.target.name) {
@@ -22,6 +33,20 @@ export const ContactForm = ({ onSubmitContact }) => {
     }
   };
 
+  const onSubmitContact = newContact => {
+    const isExistContact = contacts.find(
+      contact =>
+        contact.name.toLocaleLowerCase() === newContact.name.toLocaleLowerCase()
+    );
+
+    if (isExistContact) {
+      toast.error(`${newContact.name} is already in contacts`);
+    } else {
+      dispatch(contactsActions.addContact(newContact));
+      resetInput();
+    }
+  };
+
   const handleSubmit = e => {
     e.preventDefault();
 
@@ -30,12 +55,7 @@ export const ContactForm = ({ onSubmitContact }) => {
       name,
       number,
     };
-    onSubmitContact(newContact, resetInput);
-  };
-
-  const resetInput = () => {
-    setName('');
-    setNumber('');
+    onSubmitContact(newContact);
   };
 
   return (
@@ -69,8 +89,4 @@ export const ContactForm = ({ onSubmitContact }) => {
       <button type="submit">Add contact</button>
     </Form>
   );
-};
-
-ContactForm.propTypes = {
-  onSubmitContact: PropTypes.func.isRequired,
 };
